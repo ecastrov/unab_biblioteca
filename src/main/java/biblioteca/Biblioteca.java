@@ -1,6 +1,5 @@
 package biblioteca;
 
-import biblioteca.Prestamo;
 import libros.Libro;
 import usuarios.Docente;
 import usuarios.Estudiante;
@@ -9,6 +8,7 @@ import usuarios.Usuario;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Biblioteca {
@@ -23,7 +23,8 @@ public class Biblioteca {
     }
 
 
-    public String prestarLibro(Integer isbn, Usuario usuario, int cantDiasPrestados){
+   //public String prestarLibro(){
+   public String prestarLibro(Integer isbn, Usuario usuario, int cantDiasPrestados){
         if(!existeLibro(isbn))
             return "El libro no existe";
         if(!estaDisponible(isbn))
@@ -52,8 +53,38 @@ public class Biblioteca {
         return "OK";
     }
 
-    public void devolverLibro(){
+    public String devolverLibro(Integer isbn, Usuario usuario ){
+        if(!existeLibro(isbn))
+            return "El libro no existe";
+        if(!estaDisponible(isbn))
+            return "El libro no esta disponible";
+        if(!existeUsuario(usuario.getRun()))
+            return "El run no existe";
+        if(!estaHabilitadoParaPrestamos(usuario.getRun()))
+            return "El run no esta habilitado para prestamos";
 
+        if(usuario.getPrestamoISBN() ==isbn)
+            return "el usuario tiene el libro";
+
+
+
+        if(usuario.getPrestamoISBN() ==isbn) {
+            return "OK";
+        }
+        // Obtener la fecha actual
+        LocalDate fechaActual = LocalDate.now();
+        // Calcular la cantidad de días de retraso en la devolución
+        long diasRetraso = ChronoUnit.DAYS.between(fechaDevolucion, fechaActual);
+
+
+        if (diasRetraso > 0) {
+            // Calcular el monto de la multa
+            int multa = (int) (diasRetraso * 1000); // $1.000 por día de retraso
+
+        }
+        usuarios.get(usuario.getRun()).setPrestamoISBN(0);
+        libros.get(isbn).setCantDisponibleParaPrestar(libros.get(isbn).getCantDisponibleParaPrestar() + 1);
+        return multa;
     }
 
     public boolean estaHabilitadoParaPrestamos(String run){
@@ -61,10 +92,10 @@ public class Biblioteca {
     }
 
 
-    public String crearLibro(int isbn, String titulo, String autor, String imagenLink, int cantDisponibleEnBiblioteca, int cantDisponibleParaPrestar){
+    public String crearLibro(int isbn, String titulo,String autor, String imagen, int cantidadDisponible, int cantidadPrestamo){
         String validacionLibro = validarLibro(isbn);
         if( validacionLibro == "OK"){
-            libros.put(isbn, new Libro(isbn, titulo, autor, imagenLink, cantDisponibleEnBiblioteca, cantDisponibleParaPrestar));
+            libros.put(isbn, new Libro(isbn, titulo, autor, imagen, cantidadDisponible, cantidadPrestamo));
             return "Libro creado correctamente";
         }
         else
@@ -85,9 +116,15 @@ public class Biblioteca {
         return libros.get(isbn) != null;
     }
 
+    //public boolean estaEnBiblioteca(int isbn){
+     //   return libros.get(isbn).getCantDisponibleEnBiblioteca() > 0;
+    //}
+
     public boolean estaEnBiblioteca(int isbn){
-        return libros.get(isbn).getCantDisponibleEnBiblioteca() > 0;
+        Libro libro = libros.get(isbn);
+        return libro != null && libro.getCantDisponibleEnBiblioteca() > 0;
     }
+
 
     public boolean estaDisponible(int isbn){
         return (libros.get(isbn).getCantDisponibleParaPrestar() > 0 && libros.get(isbn).getCantDisponibleParaPrestar() <= libros.get(isbn).getCantDisponibleEnBiblioteca());
@@ -149,6 +186,9 @@ public class Biblioteca {
         return usuarios.get(run.toUpperCase()) != null;
     }
 
+    public Usuario getUsuario(String run) {
+        return usuarios.get(run.toUpperCase());
+    }
     public boolean esValidoRUN(String run){
         boolean validacion = false;
         try {
