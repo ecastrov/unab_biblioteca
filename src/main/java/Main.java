@@ -2,7 +2,7 @@ import biblioteca.Biblioteca;
 import java.util.Scanner;
 public class Main {
     public static void main(String[] args){
-        System.out.println("Administracion biblioteca.Biblioteca UNAB");
+        System.out.println("Administracion Biblioteca UNAB");
 
         Biblioteca biblioteca = new Biblioteca();
         String run, nombre, genero, carrera, carreraEnCurso, profesion;
@@ -93,7 +93,7 @@ public class Main {
                     //System.out.print("Ingrese  cantidad dias de prestamo: ");
                     //int cantidadDiasPrestamo = scanner.nextInt();
                     //public String prestarLibro(Integer isbn, Usuario usuario, int cantDiasPrestados)
-                    biblioteca.devolverLibro(isbnDevolucion,biblioteca.getUsuario(rutDevolucion));
+                    biblioteca.devolverLibro(isbnDevolucion, rutDevolucion);
 
 
                     break;

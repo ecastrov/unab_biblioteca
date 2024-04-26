@@ -8,18 +8,18 @@ import java.util.Date;
 
 public class Prestamo {
 
-    private Usuario usuarioPrestamo;
-    private Libro libroPrestado;
-    private Date fechaPrestamo;
-    private int cantDiasPrestados;
+    private Usuario       usuarioPrestamo;
+    private Libro         libroPrestado;
+    private Date          fechaPrestamo;
+    private int           cantDiasPrestados;
     private LocalDateTime fechaDevolucion;
 
     public Prestamo(Usuario usuarioPrestamo, Libro libroPrestado, Date fechaPrestamo, int cantDiasPrestados, LocalDateTime fechaDevolucion) {
-        this.usuarioPrestamo = usuarioPrestamo;
-        this.libroPrestado = libroPrestado;
-        this.fechaPrestamo = fechaPrestamo;
+        this.usuarioPrestamo   = usuarioPrestamo;
+        this.libroPrestado     = libroPrestado;
+        this.fechaPrestamo     = fechaPrestamo;
         this.cantDiasPrestados = cantDiasPrestados;
-        this.fechaDevolucion = fechaDevolucion;
+        this.fechaDevolucion   = fechaDevolucion;
     }
 
     public Usuario getUsuarioPrestamo() {

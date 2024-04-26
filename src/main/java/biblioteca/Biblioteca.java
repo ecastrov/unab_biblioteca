@@ -8,23 +8,24 @@ import usuarios.Usuario;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Biblioteca {
 
-    private HashMap<String, Usuario> usuarios;
-    private HashMap<Integer, Libro> libros;
-    private HashMap<String, Prestamo> prestamos;
+    private HashMap<String, Usuario>    usuarios;
+    private HashMap<Integer, Libro>     libros;
+    private HashMap<String, Prestamo>   prestamos;
+    private HashMap<String, Devolucion> devoluciones;
 
     public Biblioteca() {
-        this.usuarios = new HashMap<String, Usuario>();
-        this.libros = new HashMap<Integer, Libro>();
+        this.usuarios     = new HashMap<String, Usuario>();
+        this.libros       = new HashMap<Integer, Libro>();
+        this.prestamos    = new HashMap<String, Prestamo>();
+        this.devoluciones = new HashMap<String, Devolucion>();
     }
 
 
-   //public String prestarLibro(){
-   public String prestarLibro(Integer isbn, Usuario usuario, int cantDiasPrestados){
+    public String prestarLibro(Integer isbn, Usuario usuario, int cantDiasPrestados){
         if(!existeLibro(isbn))
             return "El libro no existe";
         if(!estaDisponible(isbn))
@@ -53,38 +54,38 @@ public class Biblioteca {
         return "OK";
     }
 
-    public String devolverLibro(Integer isbn, Usuario usuario ){
+    public String devolverLibro(Integer isbn, String run ){
         if(!existeLibro(isbn))
             return "El libro no existe";
-        if(!estaDisponible(isbn))
-            return "El libro no esta disponible";
-        if(!existeUsuario(usuario.getRun()))
+        if(!existeUsuario(run))
             return "El run no existe";
-        if(!estaHabilitadoParaPrestamos(usuario.getRun()))
-            return "El run no esta habilitado para prestamos";
 
-        if(usuario.getPrestamoISBN() ==isbn)
-            return "el usuario tiene el libro";
+        Usuario    usuario    = usuarios.get(run.toUpperCase());
+        Libro      libro      = libros.get(isbn);
+
+        if(!(usuario.getPrestamoISBN() == isbn))
+            return "El usuario no tiene el libro prestado";
+
+        Prestamo   prestamo   = prestamos.get(run.toUpperCase());
+
+        LocalDate fechaDevuelto = LocalDate.parse(new Date().toString(), DateTimeFormatter.ISO_LOCAL_DATE);
+        Devolucion devolucion = new Devolucion(prestamo, fechaDevuelto);
+
+        // Deja al usuario disponible asignandole un 0 al prestamoISBN. Cuando tiene otro numero distinto a 0 significa que tiene prestado un libro
+        usuario.setPrestamoISBN(0);
+
+        // Devuelve el libro por lo que suma 1 a la cantidad disponible para prestar
+        libro.setCantDisponibleParaPrestar(libros.get(isbn).getCantDisponibleParaPrestar() + 1);
+
+        if(devolucion.getMulta() == 0)
+            return "Libro devuelto en el plazo establecido. No tiene multa.";
+
+        return "Libro devuelto fuera de plazo. Debe pagar una multa de " + devolucion.getMulta();
+    }
 
 
-
-        if(usuario.getPrestamoISBN() ==isbn) {
-            return "OK";
-        }
-        // Obtener la fecha actual
-        LocalDate fechaActual = LocalDate.now();
-        // Calcular la cantidad de días de retraso en la devolución
-        long diasRetraso = ChronoUnit.DAYS.between(fechaDevolucion, fechaActual);
-
-
-        if (diasRetraso > 0) {
-            // Calcular el monto de la multa
-            int multa = (int) (diasRetraso * 1000); // $1.000 por día de retraso
-
-        }
-        usuarios.get(usuario.getRun()).setPrestamoISBN(0);
-        libros.get(isbn).setCantDisponibleParaPrestar(libros.get(isbn).getCantDisponibleParaPrestar() + 1);
-        return multa;
+    public Prestamo getPrestamo(String run){
+        return prestamos.get(run.toUpperCase());
     }
 
     public boolean estaHabilitadoParaPrestamos(String run){

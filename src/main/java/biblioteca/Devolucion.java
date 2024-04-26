@@ -1,22 +1,23 @@
 package biblioteca;
 
-import usuarios.Usuario;
-
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDate;
 
 public class Devolucion {
 
     private Prestamo prestamo;
-    private LocalDateTime fechaDevuelto;
-    private int multa;
+    private LocalDate fechaDevuelto;
+    private int      multa;
 
-    public Devolucion(Prestamo prestamo, LocalDateTime fechaDevuelto) {
+    public Devolucion(Prestamo prestamo, LocalDate fechaDevuelto) {
         this.prestamo = prestamo;
         this.fechaDevuelto = fechaDevuelto;
     }
 
-
+    public long calcularMulta(){
+        long diferenciaDias = Duration.between(prestamo.getFechaDevolucion(), fechaDevuelto).toDays();
+        return diferenciaDias * Long.valueOf(1000);
+    }
 
     public Prestamo getPrestamo() {
         return prestamo;
@@ -26,11 +27,11 @@ public class Devolucion {
         this.prestamo = prestamo;
     }
 
-    public LocalDateTime getFechaDevuelto() {
+    public LocalDate getFechaDevuelto() {
         return fechaDevuelto;
     }
 
-    public void setFechaDevuelto(LocalDateTime fechaDevuelto) {
+    public void setFechaDevuelto(LocalDate fechaDevuelto) {
         this.fechaDevuelto = fechaDevuelto;
     }
 
